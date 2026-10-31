@@ -41,7 +41,9 @@ log = logging.getLogger("mfo-bot")
 
 BOT_TOKEN = os.environ["BOT_TOKEN"].strip()
 
-BROADCAST_ADMIN_ID = int(os.environ["BROADCAST_ADMIN_ID"].strip())
+# Если переменная не задана, /broadcast просто недоступен никому.
+_admin_raw = os.getenv("BROADCAST_ADMIN_ID", "").strip()
+BROADCAST_ADMIN_ID = int(_admin_raw) if _admin_raw.isdigit() else 0
 
 # Mini App по странам. Telegram требует HTTPS для Web App.
 SITE_RU = os.getenv("SITE_RU_URL", "https://zaim-deneg.ru/").strip()

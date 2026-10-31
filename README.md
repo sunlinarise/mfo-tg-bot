@@ -24,12 +24,16 @@
 
 | Переменная | Обязательно | Пример |
 |---|---|---|
-| `BROADCAST_ADMIN_ID` | да | `123456789` |
+| `BROADCAST_ADMIN_ID` | нет* | `123456789` |
 | `SITE_RU_URL` | нет | по умолчанию `https://zaim-deneg.ru/` |
 | `SITE_KZ_URL` | нет | по умолчанию `https://oformit-mikrokrediti-bistro.zaimstore.com/` |
 | `START_TEXT` | нет | текст приветствия |
 | `START_IMAGE` | нет | `assets/start.png` |
 | `BOT_TOKEN` | ставит платформа | — |
+
+\* Без `BROADCAST_ADMIN_ID` бот запускается и отвечает на `/start`, но
+`/broadcast` закрыт для всех. Добавьте свой Telegram ID, чтобы включить
+рассылки.
 
 Ссылки стран уже зашиты по умолчанию, так что на botost.ru достаточно
 добавить только `BROADCAST_ADMIN_ID`.

@@ -16,6 +16,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
+import sys
 from pathlib import Path
 
 from aiogram import Bot, Dispatcher
@@ -34,8 +35,16 @@ from aiogram.types import (
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    stream=sys.stdout,
+    force=True,
 )
 log = logging.getLogger("mfo-bot")
+
+# Без этого в контейнере строки могут «застрять» в буфере и панель покажет
+# пустые логи, хотя бот работает.
+for _h in logging.getLogger().handlers:
+    _h.flush = _h.flush  # noqa: PLW0127 — keep default flush behaviour
+sys.stdout.reconfigure(line_buffering=True)
 
 # --- Настройки из переменных окружения (botost.ru подставляет BOT_TOKEN сам) ---
 
@@ -186,9 +195,19 @@ async def main() -> None:
         default=DefaultBotProperties(parse_mode=ParseMode.HTML),
     )
 
-    # Если на токене остался webhook (например, от Puzzlebot), polling не
-    # получит апдейты. Снимаем его при старте.
-    await bot.delete_webhook(drop_pending_updates=True)
+    # Если на токене остался webhook (например, от Puzzlebot), polling его не
+    # получит. Пытаемся снять, но с таймаутом: при заблокированном Telegram
+    # запрос может висеть бесконечно и бот так и не начнёт polling.
+    # start_polling на aiogram 3 сам вызывает delete_webhook перед циклом.
+    try:
+        await asyncio.wait_for(
+            bot.delete_webhook(drop_pending_updates=True), timeout=15
+        )
+        log.info("Webhook снят (если был)")
+    except asyncio.TimeoutError:
+        log.warning("delete_webhook не ответил за 15 с — продолжаем")
+    except Exception as exc:
+        log.warning("Не удалось снять webhook при старте: %s", exc)
 
     log.info("Запуск polling…")
     await dp.start_polling(bot, allowed_updates=["message"])

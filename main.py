@@ -75,20 +75,20 @@ USERS: set[int] = set()
 
 
 def countries_keyboard() -> InlineKeyboardMarkup:
+    # Важно: кнопка открывает Mini App через web_app. callback_data с web_app
+    # вместе не ставятся — Telegram такую кнопку игнорирует.
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
                     text="РОССИЯ",
                     web_app=WebAppInfo(url=SITE_RU),
-                    callback_data="country_ru",
                 )
             ],
             [
                 InlineKeyboardButton(
                     text="КАЗАХСТАН",
                     web_app=WebAppInfo(url=SITE_KZ),
-                    callback_data="country_kz",
                 )
             ],
         ]

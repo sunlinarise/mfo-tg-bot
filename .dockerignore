@@ -1,8 +1,0 @@
-.git
-.gitignore
-.venv
-venv
-__pycache__
-*.py[cod]
-.env
-README.md

@@ -1,5 +1,5 @@
-# Свой Dockerfile: фиксируем Python 3.11, чтобы aiogram (требует >=3.10)
-# ставился без ошибок. Данные, если появятся, храните в /app/data.
+# Python 3.11 is required: aiogram needs Python >= 3.10.
+# Persistent data (if added later) belongs in /app/data.
 
 FROM python:3.11-slim
 
@@ -10,7 +10,6 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /app
 
-# Сетевые сбои при скачивании пакетов лечим повторами.
 COPY requirements.txt .
 RUN pip install --upgrade pip \
  && (pip install --no-cache-dir --retries 5 -r requirements.txt \
